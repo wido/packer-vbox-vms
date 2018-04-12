@@ -1,0 +1,72 @@
+{
+    "min_packer_version": "0.12",
+    "builders":
+    [
+        {
+            "type": "virtualbox-iso",
+            "guest_os_type": "Ubuntu_64",
+            "guest_additions_mode": "disable",
+            "iso_url": "http://nl3.releases.ubuntu.com/16.04.4/ubuntu-16.04.4-server-amd64.iso",
+            "iso_checksum": "6a7f31eb125a0b2908cf2333d7777c82",
+            "iso_checksum_type": "md5",
+            "output_directory": "packer_output",
+            "shutdown_command": "shutdown -P now",
+            "disk_size": 8192,
+            "hard_drive_interface": "sata",
+            "hard_drive_discard": true,
+            "hard_drive_nonrotational": true,
+            "format": "ova",
+            "headless": true,
+            "http_directory": "../packer/preseed",
+            "ssh_username": "root",
+            "ssh_password": "ceph",
+            "ssh_wait_timeout": "15m",
+            "vm_name": "ubuntu",
+            "vrdp_bind_address": "0.0.0.0",
+            "boot_wait": "15s",
+            "boot_command":
+            [
+                "<enter><wait><f6><esc><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+                "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+                "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+                "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+                "/install/vmlinuz<wait>",
+                " auto<wait>",
+                " console-setup/ask_detect=false<wait>",
+                " console-setup/layoutcode=us<wait>",
+                " console-setup/modelcode=SKIP<wait>",
+                " debconf/frontend=noninteractive<wait>",
+                " debian-installer=en_US<wait>",
+                " fb=false<wait>",
+                " initrd=/install/initrd.gz<wait>",
+                " kbd-chooser/method=us<wait>",
+                " keyboard-configuration/layout=USA<wait>",
+                " keyboard-configuration/variant=USA<wait>",
+                " locale=en_US<wait>",
+                " noapic<wait>",
+                " netcfg/get_hostname={{.Name}}<wait>",
+                " netcfg/choose_interface=enp0s3",
+                " preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ubuntu1604.cfg ",
+                " -- <wait>",
+                "<enter><wait>"
+            ],
+            "vboxmanage": [
+                ["storageattach", "{{.Name}}", "--storagectl", "SATA Controller", "--device", "0", "--port",  "0", "--nonrotational", "on", "--discard", "on"]
+            ]
+        }
+    ],
+    "provisioners":
+    [
+        {
+            "type": "shell",
+            "scripts": [
+                "../packer/scripts/ubuntu1604-postinst.sh"
+            ],
+            "execute_command": "sh '{{.Path}}'"
+        },
+        {
+            "type": "shell",
+            "inline": ["fstrim -v /"]
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+*packer_output*
+*.iso
+*.ovf
+*.ova
+*.qcow2
+*.vmdk
+*~
+*.pdf
+*.gz
+*.tar
