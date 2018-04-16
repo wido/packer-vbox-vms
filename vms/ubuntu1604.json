@@ -19,7 +19,7 @@
             "headless": true,
             "http_directory": "../packer/preseed",
             "ssh_username": "root",
-            "ssh_password": "ceph",
+            "ssh_password": "packer",
             "ssh_wait_timeout": "15m",
             "vm_name": "ubuntu",
             "vrdp_bind_address": "0.0.0.0",
